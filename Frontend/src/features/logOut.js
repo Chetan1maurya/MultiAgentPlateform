@@ -3,8 +3,7 @@ import api from "../../utils/axios"
 
 const logOut = async() => {
   try{
-    const { data } = api.get("/api/auth/logout")
-    console.log(data)
+      api.get("/api/auth/logout")
   }catch(error){
     console.log(error)
   }

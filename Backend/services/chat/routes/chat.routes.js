@@ -7,6 +7,6 @@ router.get("/create-conversation", createConversation)
 router.get("/get-conversation", getConversations)
 router.post("/update-conversation", updateConversation)
 router.post("/save-messages", saveMessage)
-router.post("/get-message/:conversationId", getMessages)
+router.get("/get-message/:conversationId", getMessages)
 
 export default router

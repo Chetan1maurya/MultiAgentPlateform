@@ -12,7 +12,7 @@ app.use(express.json())
 app.use("/", router)
 
 app.get("/",(req,res) => {
-    res.json({message: "Hello what is your problem in chat"})
+    res.json({message: "Hello what is your problem in agent"})
 })
 
 app.listen(PORT,() => {
