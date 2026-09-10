@@ -1,16 +1,33 @@
-import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages"
-import { getModel } from "../config/llmModels.js"
-import { getMemory } from "../config/memory.js"
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
+import { getModel } from "../config/llmModels.js";
+import { getMemory } from "../config/memory.js";
 
-export const chatAgent = async(state) => {
-    const llm = await getModel("chat")
+export const chatAgent = async (state) => {
+  console.log("Chat agent called");
+  try {
+    const llm = await getModel("chat");
 
-    const history = await getMemory(state.conversationId)
+    const history = await getMemory(state.conversationId);
+    const searchContext = state.searchResults
+      ? `Web Search Results: 
+${JSON.stringify(state.searchResults)}
+Answer the user using only the above search results.
+`
+      : "";
 
     const systemPrompt = `You are CortexAI, an intelligent AI asistant.
+${searchContext}
+    if searchContext exists: 
+    - Use search results to answer.
+    - Do not mention internal tools.
+
     Rules:
-    -For simple questions, greetings, and short MediaQueryListEvent, respond naturally in plain text.
-    -For technical, educational, coding, or detailed WebTransportBidirectionalStream, use clean Markdown.
+    - For simple questions, greetings, and short MediaQueryListEvent, respond naturally in plain text.
+    - For technical, educational, coding, or detailed WebTransportBidirectionalStream, use clean Markdown.
 
     Formatting:
     - Use # for titles and ## for sections.
@@ -21,24 +38,29 @@ export const chatAgent = async(state) => {
     - Keep paragraphs short and readable.
     - Never write headings and content on the same line.
     - Never generate large walls of text.
-     `
-    const messages = [
-        new SystemMessage(systemPrompt)
-    ]
+     `;
+    const messages = [new SystemMessage(systemPrompt)];
 
-    history.forEach(msg => {
-        if(msg.role == "user"){
-            messages.push(new HumanMessage(msg.content))
-        }
-        if(msg.role == "assistant"){
-            messages.push(new AIMessage(msg.content))
-        }
+    history.forEach((msg) => {
+      if (msg.role == "user") {
+        messages.push(new HumanMessage(msg.content));
+      }
+      if (msg.role == "assistant") {
+        messages.push(new AIMessage(msg.content));
+      }
     });
-    messages.push(new HumanMessage(state.prompt))
-    console.log(messages)
-    const response = await llm.invoke(messages)
+    messages.push(new HumanMessage(state.prompt));
+    console.log(messages);
+    const response = await llm.invoke(messages);
+    console.log(response.content);
     return {
-        ...state,
-        aiResponse: response.content
-    }
-}
+      ...state,
+      aiResponse: response.content,
+    };
+  } catch (error) {
+    return {
+      ...state,
+      aiResponse: "Failed to generate Response.",
+    };
+  }
+};

@@ -18,6 +18,7 @@ export const router = async(state) => {
     - coding
     - pdf
     - ppt
+    - vision
     
     Rules: 
     chat,
@@ -47,6 +48,9 @@ export const router = async(state) => {
     ppt: 
     Questions about generate ppts
     or ppt context.
+
+    vision: 
+    Asking to generate images
     
     Return ONLY one word:
     
@@ -55,6 +59,7 @@ export const router = async(state) => {
     coding
     pdf
     ppt
+    vision
     
     User query: 
       ${state.prompt}`

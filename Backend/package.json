@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "ioredis": "^6.0.0"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0"
   }
 }

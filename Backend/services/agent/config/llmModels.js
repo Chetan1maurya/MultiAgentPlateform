@@ -1,8 +1,14 @@
 import { ChatGroq } from "@langchain/groq"
 import { ChatGoogle } from "@langchain/google";
+import { ChatOpenRouter } from "@langchain/openrouter";
 import dotenv from 'dotenv'
 dotenv.config()
 
+const deepseek = new ChatOpenRouter({
+  model: "deepseek/deepseek-chat",
+  temperature: 0,
+  maxTokens: 2000
+});
 
 const groq = new ChatGroq({
     model: "openai/gpt-oss-120b",
@@ -22,7 +28,7 @@ export const getModel = async(agent) => {
         case "search":
             return groq;
         case "coding":
-            return gemini;
+            return deepseek;
             
         default: 
             return groq;

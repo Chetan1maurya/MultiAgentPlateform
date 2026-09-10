@@ -2,7 +2,7 @@ import { Code2, FileText, Globe, ImageIcon, MessageSquare, Mic, Paperclip, Prese
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import sendMessage from '../features/sendMessage.js'
-import { addMessage } from '../redux/messagesSlice.js'
+import { addMessage, setArtifacts } from '../redux/messagesSlice.js'
 import { addConversation, setConvTitle, setSelectedConversation } from '../redux/conversationSlice.js'
 import { createConversation } from '../features/createConversation.js'
 import { updateConversation } from '../features/updateConversation.js'
@@ -36,7 +36,8 @@ const Chatinput = () => {
     dispatch(addMessage({role: "user", content: value.trim()}))
     setValue("")
     const data = await sendMessage(payload)
-    dispatch(addMessage({role: "assistant", content: data}))
+    dispatch(setArtifacts(data?.artifacts || []))
+    dispatch(addMessage({role: "assistant", content: data.answer, images: data.images }))
     console.log(data)
   }
 
@@ -67,9 +68,9 @@ const Chatinput = () => {
       label: "PPT"
     },
     {
-      id: "image",
+      id: "vision",
       icon: ImageIcon,
-      label: "Image"
+      label: "Vision"
     },
     {
       id: "search",
@@ -86,7 +87,8 @@ const Chatinput = () => {
               const isActive = selectedAgent === agent.label
               const Icon  = agent.icon
               return (
-                <div 
+                <div
+                key={agent.id}
                 onClick={() => setSelectedAgent(agent.label)}
                 className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium border transition-all cursor-pointer
                 ${isActive ? "bg-linear-to-br from-indigo-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99, 102, 241, .35)]" : "bg-white/3 text-slate-400 border-white/6 hover:bg-white/7"}

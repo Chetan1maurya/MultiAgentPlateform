@@ -6,6 +6,7 @@ import { codingAgent } from "../agents/coding.agent.js"
 import { pdfAgent } from "../agents/pdf.agent.js"
 import { pptAgent } from "../agents/ppt.agent.js"
 import { searchAgent } from "../agents/search.agent.js"
+import { visionAgent } from "../agents/vision.agent.js"
 
 const workflow = new StateGraph(agentState)
 
@@ -15,6 +16,7 @@ workflow.addNode("coding", codingAgent)
 workflow.addNode("pdf", pdfAgent)
 workflow.addNode("ppt", pptAgent)
 workflow.addNode("search", searchAgent)
+workflow.addNode("vision",visionAgent)
 
 workflow.addEdge("__start__", "router")
 workflow.addConditionalEdges("router",(state) => {
@@ -29,20 +31,25 @@ workflow.addConditionalEdges("router",(state) => {
             return "pdf";
         case "ppt":
             return "ppt";
+        case "vision":
+            return "vision";
         default: 
-            break;
+            return "chat";
     }
 },{
     chat: "chat",
     search: "search",
     pdf: "pdf",
     ppt: "ppt",
-    coding: "coding"
+    coding: "coding",
+    vision: "vision"
 })
 
 workflow.addEdge("search", "chat")
 workflow.addEdge("chat","__end__")
+workflow.addEdge("coding","__end__")
 workflow.addEdge("pdf", "__end__")
 workflow.addEdge("ppt", "__end__")
+workflow.addEdge("vision","__end__")
 
 export const graph = workflow.compile()

@@ -26,7 +26,9 @@ app.use("/api/agent", protect, proxy(process.env.AGENT_SERVICE))
 app.get("/api/get-me", protect, getMe)
 
 app.get("/",(req,res) => {
+    const start = performance.now()
     res.json({message: "Hello what is your problem"})
+    console.log("Time to reach gateway base API", performance.now() - start)
 })
 
 app.listen(PORT,() => {
