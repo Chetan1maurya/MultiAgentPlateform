@@ -2,7 +2,7 @@ import MessageList from './MessageList.jsx'
 import Nav from './Nav.jsx'
 import Chatinput from './Chatinput.jsx'
 import { useDispatch, useSelector } from 'react-redux'
-import getMessages from '../features/getMessages.jsx'
+import getMessages from '../features/getMessages.js'
 import { setArtifacts, setMessages } from '../redux/messagesSlice.js'
 import { useEffect } from 'react'
 
