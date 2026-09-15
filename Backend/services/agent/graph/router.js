@@ -7,6 +7,20 @@ export const router = async(state) => {
             agent: state.agent
         }
     }
+    console.log("file type is ", state.file.mimetype)
+    if(state.file.mimetype === "application/pdf"){
+        return {
+            ...state,
+            agent: "pdfRag"
+        }
+    }
+    if(state.file.mimetype.startsWith("image/")){
+        console.log("Image Analyzer hi agent hai")
+        return {
+            ...state,
+            agent: "imageAnalyzer"
+        }
+    }
 
     const llm = await getModel("router")
 
@@ -19,6 +33,8 @@ export const router = async(state) => {
     - pdf
     - ppt
     - vision
+    - imageAnalyzer
+    - pdfRag
     
     Rules: 
     chat,
@@ -52,6 +68,15 @@ export const router = async(state) => {
     vision: 
     Asking to generate images
     
+    imageAnalyzer:
+    Asking to analyze given image,
+    Give insights from the image
+
+    pdfRag: 
+    Asking to analyze given pdf,
+    Give insights from the file, 
+    Given answers of the questions from the pdf given, not outside from it.
+
     Return ONLY one word:
     
     chat
@@ -60,6 +85,8 @@ export const router = async(state) => {
     pdf
     ppt
     vision
+    imageAnalyzer
+    pdfRag
     
     User query: 
       ${state.prompt}`
