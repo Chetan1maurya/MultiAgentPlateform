@@ -1,11 +1,14 @@
+import { checkAgentLimit } from "../config/agentLimit.js"
 import { getModel } from "../config/llmModels.js"
 import { deductCredits } from "../utils/deductCredits.js"
 
-export const codingAgent = async(state) => {
-    console.log("Hello from Coding agent")
-    const intentLlm = await getModel("intent")
-    const llm = await getModel("coding")
-    const intentRes = await intentLlm.invoke(`
+export const codingAgent = async (state) => {
+    try {
+        console.log("Hello from Coding agent")
+        await checkAgentLimit(state.userId, "coding")
+        const intentLlm = await getModel("intent")
+        const llm = await getModel("coding")
+        const intentRes = await intentLlm.invoke(`
             You are an intent classifier.
             Return ONLY one of these values. 
             CODE_GENERATION
@@ -19,7 +22,7 @@ export const codingAgent = async(state) => {
                 ${state.prompt}
           `)
         const intent = intentRes.content
-        if(intent == "CODE_GENERATION"){
+        if (intent == "CODE_GENERATION") {
             const prompt = `
                 You are CortexAI Coding Agent. If you are asked to generate code related to DSA and its concept so don't follow below structure, just return specific language code in chat and explain working otherwise Generate the requested project. 
                 Default stack: 
@@ -75,11 +78,17 @@ export const codingAgent = async(state) => {
                 ${state.prompt}
             `
             const response = await llm.invoke(prompt)
-            const data = JSON.parse(response.content)
+            const cleanedContent = response.content
+                .replace(/^```json\s*/i, "")
+                .replace(/^```\s*/i, "")
+                .replace(/\s*```$/i, "")
+                .trim();
+
+            const data = JSON.parse(cleanedContent);
             await deductCredits(state.userId, "coding")
             return {
-                ...state, 
-                aiResponse: "Code Generated Successfully.", 
+                ...state,
+                aiResponse: "Code Generated Successfully.",
                 artifacts: [
                     {
                         id: Date.now(),
@@ -106,7 +115,7 @@ export const codingAgent = async(state) => {
         User Request: 
         ${state.prompt}
             `)
-        
+
         const data = res.content
         await deductCredits(state.userId, "coding")
         return {
@@ -114,4 +123,12 @@ export const codingAgent = async(state) => {
             aiResponse: data,
             artifacts: []
         }
+    } catch (error) {
+        console.log(error)
+        return {
+            ...state,
+            aiResponse: error?.data?.message || "Failed to generate code",
+            artifacts: []
+        }
+    }
 }

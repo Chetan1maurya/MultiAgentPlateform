@@ -1,3 +1,4 @@
+import { checkAgentLimit } from "../config/agentLimit.js"
 import { getModel } from "../config/llmModels.js"
 import { createPdfTool } from "../tools/createPdf.tool.js"
 import { deductCredits } from "../utils/deductCredits.js"
@@ -6,8 +7,9 @@ import { generatePdf } from "../utils/generatePdf.js"
 import { getFromS3 } from "../utils/getFromS3.js"
 import { uploadToS3 } from "../utils/uploadToS3.js"
 
-export const pdfAgent = async(state) => {
-    try{
+export const pdfAgent = async (state) => {
+    try {
+        await checkAgentLimit(state.userId, "pdf")
         const llm = await getModel("pdf")
         const prompt = `You are an expert document writer. 
         Return ONLY valid JSON.
@@ -46,49 +48,49 @@ export const pdfAgent = async(state) => {
 [Download URL](${downloadUrl})
 Link expires in 24 hours`
         }
-    }catch(error){
+    } catch (error) {
         console.log(error)
         return {
             ...state,
-            aiResponse: "Failed to generate pdf"
+            aiResponse: error?.data?.message || "Failed to generate pdf"
         }
     }
-//     console.log("PDf agent called")
-//     const llm = await getModel("pdf");
+    //     console.log("PDf agent called")
+    //     const llm = await getModel("pdf");
 
-//     const model = llm.bindTools([
-//         createPdfTool
-//     ]);
+    //     const model = llm.bindTools([
+    //         createPdfTool
+    //     ]);
 
-//     const response = await model.invoke([
-//         {
-//             role: "system",
-//             content: `
-// You are a PDF generation agent.
+    //     const response = await model.invoke([
+    //         {
+    //             role: "system",
+    //             content: `
+    // You are a PDF generation agent.
 
-// Your job is to understand the user's request
-// and decide what action is required.
+    // Your job is to understand the user's request
+    // and decide what action is required.
 
-// If the user wants an actual downloadable PDF,
-// use the create_pdf tool.
+    // If the user wants an actual downloadable PDF,
+    // use the create_pdf tool.
 
-// Do not manually generate the PDF.
-// The create_pdf tool is responsible for generating,
-// uploading and returning the PDF URL.
+    // Do not manually generate the PDF.
+    // The create_pdf tool is responsible for generating,
+    // uploading and returning the PDF URL.
 
-// If the user is only asking a question and does
-// not require a PDF, answer normally.
-// `
-//         },
+    // If the user is only asking a question and does
+    // not require a PDF, answer normally.
+    // `
+    //         },
 
-//         {
-//             role: "user",
-//             content: state.prompt
-//         }
-//     ]);
+    //         {
+    //             role: "user",
+    //             content: state.prompt
+    //         }
+    //     ]);
 
-//     return {
-//         ...state,
-//         messages: [response]
-//     };
+    //     return {
+    //         ...state,
+    //         messages: [response]
+    //     };
 }

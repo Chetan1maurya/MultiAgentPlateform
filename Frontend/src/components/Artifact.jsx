@@ -1,7 +1,7 @@
-import { PanelRightClose, Eye, Code2, PanelRightOpen, Copy, Check } from "lucide-react";
+import { PanelRightClose, Eye, Code2, PanelRightOpen, Copy, Check, X } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import Editor from '@monaco-editor/react'
 
 const Artifact = () => {
@@ -10,7 +10,7 @@ const Artifact = () => {
   const [tab, setTab] = useState("code");
   const [activeFile, setActiveFile] = useState(0)
   const [copied, setCopied] = useState(false)
-
+  const [mobileOpen, setMobileOpen] = useState(false)
   const file = artifacts[0]?.files[activeFile]
   const htmlFile = artifacts[0]?.files?.find(f => f.name.endsWith(".html"))
   const cssFile = artifacts[0]?.files?.find(f => f.name.endsWith(".css"))
@@ -70,22 +70,24 @@ const Artifact = () => {
     return "plaintext";
   }
 
-  return (
-    <motion.div
-      initial={{ width: 400 }}
-      animate={{ width: collapsed ? 48 : 400 }}
-      transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="hidden lg:flex h-full border border-white/6 flex-col overflow-hidden shrink-0"
-    >
+  const PanelContent = ({onClose}) => {
+    return (
+      <>
       {!collapsed ? (
         <div className="flex flex-col h-full bg-[#0d0f14]">
           <div className="h-14 px-4 border-b border-white/6 flex items-center gap-3 shrink-0">
             <button
-              onClick={() => setCollapsed(true)}
-              className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer shrink-0"
-            >
-              <PanelRightClose size={16} />
-            </button>
+  onClick={() => {
+    if (onClose) {
+      onClose();
+    } else {
+      setCollapsed(true);
+    }
+  }}
+  className="flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer shrink-0"
+>
+  {onClose ? <X size={15} /> : <PanelRightClose size={16} />}
+</button>
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <div className="flex items-center justify-center w-6 h-6 rounded-md bg-indigo-500/10 border border-indigo-500/20 shrink-0">
                 <Code2 size={12} className="text-indigo-400" />
@@ -166,7 +168,33 @@ const Artifact = () => {
           </div>
         </div>
       )}
+      </>
+    )
+  }
+
+  return (
+    <>
+    <button onClick={() => setMobileOpen(true)} className="lg:hidden fixed bottom-24 right-4 z-40 flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[12px] font-medium shadow-lg shadow-indigo-500/20 border-none cursor-pointer transition-colors duration-150">
+      <Code2 size={13}/>
+      View Code
+    </button>
+    <AnimatePresence>
+      {mobileOpen && <><motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: 0.2}} onClick={() => setMobileOpen(false)} className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"/>
+        <motion.div initial={{x: "100%"}} animate={{x: 0}} exit={{x: "100%"}} transition={{ duration: 0.25, ease: "easeInOut"}}  className="lg:hidden fixed inset-y-0 right-0 z-50 w-[88vw] max-w-[420px] border-1 border-white/6 overflow-hidden">
+          <PanelContent onClose = {() => setMobileOpen(false)}/>
+        </motion.div>
+      </>}
+    </AnimatePresence>
+
+    <motion.div
+      initial={{ width: 400 }}
+      animate={{ width: collapsed ? 48 : 400 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+      className="hidden lg:flex h-full border border-white/6 flex-col overflow-hidden shrink-0"
+    >
+      <PanelContent />
     </motion.div>
+    </>
   );
 };
 

@@ -5,9 +5,11 @@ import { vectorStore } from "../config/vectorDb.js"
 import { getModel } from "../config/llmModels.js"
 import { deductCredits } from "../utils/deductCredits.js"
 import { HumanMessage, SystemMessage } from "@langchain/core/messages"
+import { checkAgentLimit } from "../config/agentLimit.js"
 
-export const pdfRag = async(state) => {
-    try{
+export const pdfRag = async (state) => {
+    try {
+        await checkAgentLimit(state.userId, "pdf")
         const buffer = fs.readFileSync(state.file.path)
         const pdf = new PDFParse({
             data: buffer
@@ -24,7 +26,7 @@ export const pdfRag = async(state) => {
         const collectionName = `pdf-${Date.now()}`
         const store = await vectorStore(docs, collectionName)
 
-        const relevantDocs = await store.similaritySearch(state.prompt,5)
+        const relevantDocs = await store.similaritySearch(state.prompt, 5)
         const context = relevantDocs.map(d => d.pageContent).join("\n\n")
         const llm = await getModel("pdfRag")
         console.log(llm)
@@ -38,7 +40,7 @@ export const pdfRag = async(state) => {
                 "I couldn't find this information in the uploaded PDF."
                 - Use Markdown formatting.
                 `),
-            
+
             new HumanMessage(`Context: ${context}
                 Question: ${state.prompt}
                 `)
@@ -50,14 +52,14 @@ export const pdfRag = async(state) => {
             ...state,
             aiResponse: response.content
         }
-    }catch(error){
+    } catch (error) {
         console.log(error)
         return {
             ...state,
-            aiResponse: "Failed to analyze pdf"
+            aiResponse: error?.data?.message || "Failed to analyze pdf"
         }
     }
-    finally{
-          fs.unlinkSync(state.file.path)
+    finally {
+        fs.unlinkSync(state.file.path)
     }
 }

@@ -3,7 +3,7 @@ import { graph } from "../graph/graph.js"
 import { addMessage } from "../config/memory.js"
 import redis from "../../../shared/redis/redis.js"
 
-export const agent = async(req,res) => {
+export const agent = async(req,res,next) => {
     try{
         const { prompt, conversationId, agent } = req.body
         const file = req.file
@@ -16,6 +16,7 @@ export const agent = async(req,res) => {
         const result = await graph.invoke({
             prompt, conversationId, agent, userId, file
         })
+        console.log("Response Generated ",result.aiResponse)
         const response = result.aiResponse
         await addMessage(conversationId, "user", prompt)
         await addMessage(conversationId, "assistant", response)
@@ -24,7 +25,7 @@ export const agent = async(req,res) => {
         })
         return res.status(200).json({answer: result?.aiResponse, images: result?.images, artifacts: result?.artifacts})
     }catch(error){
-        return res.status(500).json({message: `agent error ${error}`})
+        next(error)
     }
 }
 

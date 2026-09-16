@@ -2,7 +2,7 @@ import { Code2, FileText, Globe, ImageIcon, MessageSquare, Mic, Paperclip, Prese
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import sendMessage from '../features/sendMessage.js'
-import { addMessage, setArtifacts } from '../redux/messagesSlice.js'
+import { addMessage, setArtifacts, setLoading } from '../redux/messagesSlice.js'
 import { addConversation, setConvTitle, setSelectedConversation } from '../redux/conversationSlice.js'
 import { createConversation } from '../features/createConversation.js'
 import { updateConversation } from '../features/updateConversation.js'
@@ -12,11 +12,13 @@ const Chatinput = () => {
   const [value, setValue] = useState("")
   const [selectedAgent, setSelectedAgent] = useState("Auto")
   const dispatch = useDispatch()
+  const { isLoading } = useSelector((state) => state.message)
   const { selectedConversation } = useSelector((state) => state.conversation)
   const [selectedFile, setSelectedFile] = useState(null)
   const fileRef = useRef(null)
 
   const handleSendMessage = async() => {
+    dispatch(setLoading(true))
     let conversation = selectedConversation
     if(!conversation){
       const conv = await createConversation()
@@ -37,11 +39,14 @@ const Chatinput = () => {
     formData.append("prompt", value.trim())
     formData.append("conversationId", conversation?._id)
     formData.append("agent",selectedAgent.toLowerCase())
-    formData.append("file",selectedFile)
+    if(selectedFile){
+      formData.append("file",selectedFile)
+    }
 
     dispatch(addMessage({role: "user", content: value.trim()}))
     setValue("")
     const data = await sendMessage(formData)
+    dispatch(setLoading(false))
     dispatch(setArtifacts(data?.artifacts || []))
     dispatch(addMessage({role: "assistant", content: data.answer, images: data.images }))
     console.log(data)
@@ -145,7 +150,7 @@ const Chatinput = () => {
             </button>
           </div> 
           <button 
-          disabled={!value}
+          disabled={!value && isLoading}
           className={`flex items-center justify-center w-8 h-8 rounded-lg border-none cursor-pointer transition-all duration-150 ${value.trim() ? "bg-linear-to-br from-indigo-500 to-voilet-700 hover:opacity-90 text-white" : "bg-white/5 text-slate-600 cursor-not-allowed"}`} onClick={handleSendMessage}>
             <Send size={15} />
           </button>

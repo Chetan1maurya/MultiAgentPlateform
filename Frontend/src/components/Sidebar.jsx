@@ -8,6 +8,7 @@ import {
   PenSquare,
   Plus,
   User,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getConversation } from "../features/getConversation.js";
@@ -31,6 +32,8 @@ const Sidebar = () => {
   );
   const { userData } = useSelector((state) => state.user);
   const [showBilling, setShowBilling] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
 
   const handleCreateConversation = async () => {
     const data = await createConversation();
@@ -98,12 +101,20 @@ const Sidebar = () => {
   }
   return (
     <>
-      <button className="lg:hidden fixed top-3.5 left-4 z-50 flex items-center justify-center w-8 h-8 rounded-lg bg-[#0d0f14] border border-white/6 text-slate-400 hover:text-slate-200 transition-colors duration-150 cursor-pointer">
-        <Menu size={14}/>
+      <button onClick={() => setMobileOpen(true)} className="lg:hidden fixed top-3.5 left-4 z-50 flex items-center justify-center w-8 h-8 rounded-lg bg-[#0d0f14] border border-white/6 text-slate-400 hover:text-slate-200 transition-colors duration-150 cursor-pointer">
+        <Menu size={14} />
       </button>
-      <div className="fixed lg:static inset-y-0 left-0 z-50 w-67.5 h-screen shrink-0 bg-[#0d0f14] border-r border-white/6">
+
+      {
+        mobileOpen && <div onClick={() => setMobileOpen(false)} className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
+      }
+
+      <div className={`fixed lg:static inset-y-0 left-0 z-50 w-[270px] h-screen shrink-0 bg-[#0d0f14] flex border-r border-white/6 transition-transform duration-250 ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="flex flex-col h-full">
           <div className="flex items-center gap-2.5 px-4 py-4 border-b border-white/6">
+            <button onClick={() => setMobileOpen(false)} className="lg:hidden flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer ">
+              <X />
+            </button>
             <div
               className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
               onClick={() => setCollapsed(true)}
@@ -114,7 +125,7 @@ const Sidebar = () => {
               CortexAI
             </span>
             <span className="text-[10px] font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full tracking-wide">
-              free
+              {`${userData?.plan}`}
             </span>
             <button
               className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer"
@@ -190,7 +201,7 @@ const Sidebar = () => {
                     {userData?.name || "user"}
                   </p>
                   <p className="text-[11px] text-slate-600 mt-px">
-                    {"Free Plan"}
+                    {`${userData?.plan}` || "free plan"}
                   </p>
                 </div>
 
@@ -215,12 +226,12 @@ const Sidebar = () => {
               </button>
             )}
           </div>
-        </div> 
-        <BillingDrawer 
+        </div>
+      </div>
+        <BillingDrawer
           open={showBilling}
           onClose={() => setShowBilling(false)}
         />
-      </div>
     </>
   );
 };

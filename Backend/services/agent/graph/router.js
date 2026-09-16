@@ -1,24 +1,25 @@
 import { getModel } from "../config/llmModels.js"
 
-export const router = async(state) => {
-    if(state.agent && state.agent !== "auto"){
-        return{
-            ...state, 
+export const router = async (state) => {
+    if (state.agent && state.agent !== "auto") {
+        return {
+            ...state,
             agent: state.agent
         }
     }
-    console.log("file type is ", state.file.mimetype)
-    if(state.file.mimetype === "application/pdf"){
-        return {
-            ...state,
-            agent: "pdfRag"
+    if (state.file) {
+        if (state.file.mimetype === "application/pdf") {
+            return {
+                ...state,
+                agent: "pdfRag"
+            }
         }
-    }
-    if(state.file.mimetype.startsWith("image/")){
-        console.log("Image Analyzer hi agent hai")
-        return {
-            ...state,
-            agent: "imageAnalyzer"
+        if (state.file.mimetype.startsWith("image/")) {
+            console.log("Image Analyzer hi agent hai")
+            return {
+                ...state,
+                agent: "imageAnalyzer"
+            }
         }
     }
 
@@ -92,8 +93,8 @@ export const router = async(state) => {
       ${state.prompt}`
 
     const response = await llm.invoke(prompt)
-    return{
-        ...state, 
+    return {
+        ...state,
         agent: response.content.trim().toLowerCase()
     }
 }

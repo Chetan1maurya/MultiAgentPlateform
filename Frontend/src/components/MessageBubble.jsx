@@ -17,6 +17,7 @@ const MessageBubble = ({ role, content, images }) => {
       setCopiedCode("");
     }, 2000);
   };
+  
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div

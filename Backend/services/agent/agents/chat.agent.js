@@ -6,10 +6,12 @@ import {
 import { getModel } from "../config/llmModels.js";
 import { getMemory } from "../config/memory.js";
 import { deductCredits } from "../utils/deductCredits.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const chatAgent = async (state) => {
   console.log("Chat agent called");
   try {
+    await checkAgentLimit(state.userId, "chat")
     const llm = await getModel("chat");
     const history = await getMemory(state.conversationId);
     const searchContext = state.searchResults
@@ -59,9 +61,10 @@ ${searchContext}
       aiResponse: response.content,
     };
   } catch (error) {
-    return {
-      ...state,
-      aiResponse: "Failed to generate Response.",
-    };
+    console.log(error)
+        return {
+            ...state,
+            aiResponse:error?.data?.message || "Failed to continue chat"
+    }
   }
 };

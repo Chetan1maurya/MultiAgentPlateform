@@ -25,11 +25,9 @@ const App = () => {
     }
     response()
   },[])
-
-  
   return (
     <>
-      <Home/>
+      <Home />
     </>
   )
 }
