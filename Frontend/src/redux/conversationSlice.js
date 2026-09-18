@@ -13,6 +13,11 @@
         addConversation: (state, action) => {
             state.conversations.unshift(action.payload)
         },
+        removeConversation: (state, action) => {
+            state.conversations = state.conversations.filter(
+                conversation => conversation._id !== action.payload
+            );
+        },
         setSelectedConversation: (state, action) => {
             state.selectedConversation = action.payload
         },
@@ -30,5 +35,5 @@
     }
  })
 
- export const {setConversation, addConversation, setSelectedConversation, setConvTitle} = conversationSlice.actions
+ export const {setConversation, addConversation, setSelectedConversation, setConvTitle, removeConversation} = conversationSlice.actions
  export default conversationSlice.reducer

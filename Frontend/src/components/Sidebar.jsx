@@ -9,19 +9,25 @@ import {
   Plus,
   User,
   X,
+  MoreVertical,
+  Trash2,
 } from "lucide-react";
+import { deleteConversation } from "../features/deleteConversation.js";
 import { useEffect, useState } from "react";
 import { getConversation } from "../features/getConversation.js";
 import { createConversation } from "../features/createConversation.js";
 import { useDispatch, useSelector } from "react-redux";
+import { MdDelete } from "react-icons/md";
 import {
   addConversation,
   setConversation,
   setSelectedConversation,
+  removeConversation
 } from "../redux/conversationSlice.js";
 import logOut from "../features/logOut.js";
 import { setUserData } from "../redux/userSlice.js";
 import BillingDrawer from "./BillingDrawer.jsx";
+import { clearMessages } from "../redux/messagesSlice.js";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -33,7 +39,9 @@ const Sidebar = () => {
   const { userData } = useSelector((state) => state.user);
   const [showBilling, setShowBilling] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [confirmDeleteConv, setConfirmDeleteConv] = useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState(null);
 
   const handleCreateConversation = async () => {
     const data = await createConversation();
@@ -161,18 +169,27 @@ const Sidebar = () => {
                 <div
                   key={conv._id}
                   onClick={() => dispatch(setSelectedConversation(conv))}
-                  className={`flex items-center gap-2.5 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150 ${isActive ? "bg-indigo-500/10 border-indigo-500/18" : "bg-transparent border-transparent"}`}
+                  className={`flex justify-between items-center gap-2.5 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150 ${isActive ? "bg-indigo-500/10 border-indigo-500/18" : "bg-transparent border-transparent"}`}
                 >
-                  <div
-                    className={`flex items-center justify-center shrink-0 w-7 h-7 rounded-lg transition-colors duration-150 ${isActive ? "bg-indigo-500/15 text-indigo-400" : "bg-white/5 text-slate-500"}`}
-                  >
-                    <MessageSquare size={13} />
+                  <div className="flex gap-2">
+                    <div
+                      className={`flex items-center justify-center shrink-0 w-7 h-7 rounded-lg transition-colors duration-150 ${isActive ? "bg-indigo-500/15 text-indigo-400" : "bg-white/5 text-slate-500"}`}
+                    >
+                      <MessageSquare size={13} />
+                    </div>
+                    <span
+                      className={`flex items-center text-[13px] font-medium truncate ${isActive ? "text-slate-100" : "text-slate-300"}`}
+                    >
+                      {conv.title || "NEW CHAT"}
+                    </span>
                   </div>
-                  <span
-                    className={`text-[13px] font-medium truncate ${isActive ? "text-slate-100" : "text-slate-300"}`}
-                  >
-                    {conv.title || "NEW CHAT"}
-                  </span>
+                  <div>
+                    <button onClick={(e) => {
+                      e.stopPropagation();
+                      setConversationToDelete(conv._id);
+                      setConfirmDeleteConv(true);
+                    }}><MdDelete /></button>
+                  </div>
                 </div>
               );
             })}
@@ -210,10 +227,8 @@ const Sidebar = () => {
                     <Coins size={16} />
                   </button>
                   <button
-                    onClick={() => {
-                      logOut();
-                      dispatch(setUserData(null));
-                    }}
+                    type="button"
+                    onClick={() => setShowLogoutConfirm(true)}
                     className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/8 hover:text-slate-400 transition-all duration-150"
                   >
                     <LogOut size={16} />
@@ -228,10 +243,100 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
-        <BillingDrawer
-          open={showBilling}
-          onClose={() => setShowBilling(false)}
-        />
+      {showLogoutConfirm && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#151821] p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-white">
+              Confirm logout
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Are you sure you want to log out?
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
+              >
+                No
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  logOut();
+                  dispatch(setUserData(null));
+                  setShowLogoutConfirm(false);
+                }}
+                className="rounded-lg bg-red-500/15 px-4 py-2 text-sm text-red-400 hover:bg-red-500/25"
+              >
+                Yes, logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {confirmDeleteConv && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+          onClick={() => setConfirmDeleteConv(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#151821] p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 className="text-lg font-semibold text-white">
+              Confirm delete conversation
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Are you sure you want to delete this conversation
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmDeleteConv(false);
+                  setConversationToDelete(null);
+                }}
+                className="rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
+              >
+                No
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  deleteConversation(conversationToDelete);
+                  dispatch(removeConversation(conversationToDelete));
+                  if (selectedConversation?._id === conversationToDelete) {
+                    dispatch(clearMessages());
+                    dispatch(setSelectedConversation(null));
+                  }
+                  setConversationToDelete(null);
+                  setConfirmDeleteConv(false);
+                }}
+                className="rounded-lg bg-red-500/15 px-4 py-2 text-sm text-red-400 hover:bg-red-500/25"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <BillingDrawer
+        open={showBilling}
+        onClose={() => setShowBilling(false)}
+      />
     </>
   );
 };

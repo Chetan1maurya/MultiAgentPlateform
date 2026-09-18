@@ -1,5 +1,4 @@
 import Conversation from "../models/conversation.model.js";
-
 import Message from "../models/message.model.js";
 
 export const createConversation = async (req, res) => {
@@ -45,6 +44,19 @@ export const updateConversation = async (req, res) => {
       .json({ message: `Update conversation error ${error}` });
   }
 };
+
+export const deleteConversation = async(req, res) => {
+  try{
+    const id = req.body.id;
+    await Conversation.findByIdAndDelete(id)
+    await Message.deleteMany({
+      conversationId: id
+    });
+  }catch(error){
+    console.log(error)
+    return res.status(500).json({message: `Delete Converstion error ${error}`});
+  }
+}
 
 export const saveMessage = async (req, res) => {
   try {
