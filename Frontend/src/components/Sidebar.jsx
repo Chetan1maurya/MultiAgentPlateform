@@ -118,7 +118,7 @@ const Sidebar = () => {
       }
 
       <div className={`fixed lg:static inset-y-0 left-0 z-50 w-[270px] h-screen shrink-0 bg-[#0d0f14] flex border-r border-white/6 transition-transform duration-250 ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full w-full min-w-0">
           <div className="flex items-center gap-2.5 px-4 py-4 border-b border-white/6">
             <button onClick={() => setMobileOpen(false)} className="lg:hidden flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors duration-150 bg-transparent border-none cursor-pointer ">
               <X />
@@ -169,27 +169,47 @@ const Sidebar = () => {
                 <div
                   key={conv._id}
                   onClick={() => dispatch(setSelectedConversation(conv))}
-                  className={`flex justify-between items-center gap-2.5 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150 ${isActive ? "bg-indigo-500/10 border-indigo-500/18" : "bg-transparent border-transparent"}`}
+                  className={`flex items-center justify-between w-full h-[48px] gap-2 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150 ${isActive
+                      ? "bg-indigo-500/10 border-indigo-500/18"
+                      : "bg-transparent border-transparent"
+                    }`}
                 >
+                  {/* LEFT SIDE */}
                   <div className="flex gap-2">
+
+                    {/* ICON */}
                     <div
-                      className={`flex items-center justify-center shrink-0 w-7 h-7 rounded-lg transition-colors duration-150 ${isActive ? "bg-indigo-500/15 text-indigo-400" : "bg-white/5 text-slate-500"}`}
+                      className={`flex items-center justify-center shrink-0 w-7 h-7 rounded-lg transition-colors duration-150 ${isActive
+                          ? "bg-indigo-500/15 text-indigo-400"
+                          : "bg-white/5 text-slate-500"
+                        }`}
                     >
                       <MessageSquare size={13} />
                     </div>
+
+                    {/* TITLE */}
                     <span
-                      className={`flex items-center text-[13px] font-medium truncate ${isActive ? "text-slate-100" : "text-slate-300"}`}
+                      className={`block w-[165px] max-w-[165px] overflow-hidden whitespace-nowrap text-ellipsis text-[13px] font-medium ${isActive
+                          ? "text-slate-100"
+                          : "text-slate-300"
+                        }`}
                     >
                       {conv.title || "NEW CHAT"}
                     </span>
                   </div>
-                  <div>
-                    <button onClick={(e) => {
+
+                  {/* DELETE */}
+                  <button
+                    type="button"
+                    className="shrink-0 w-5 h-5 flex items-center justify-center text-slate-300 hover:text-white"
+                    onClick={(e) => {
                       e.stopPropagation();
                       setConversationToDelete(conv._id);
                       setConfirmDeleteConv(true);
-                    }}><MdDelete /></button>
-                  </div>
+                    }}
+                  >
+                    <MdDelete size={14} />
+                  </button>
                 </div>
               );
             })}

@@ -31,44 +31,107 @@ export const createPdfTool = tool(
             24 * 60
         );
 
-        return JSON.stringify({
+        return {
             success: true,
             title,
             downloadUrl
-        });
+        };
     },
 
     {
         name: "create_pdf",
 
         description: `
-        Create a downloadable PDF.
+      Create a professional, well-structured downloadable PDF.
 
-        Use this when the user wants:
-        - a PDF
-        - notes as a PDF
-        - a report
-        - a guide
-        - documentation
-        - a downloadable document
+Use this tool whenever the user requests a PDF, report,
+guide, tutorial, study material, documentation, notes,
+resume, proposal, comparison, or other document.
 
-        Generate well-structured content with a title,
-        optional subtitle, sections and bullet points.
+The PDF content and architecture should be designed based
+on the user's request.
+
+The calling agent is responsible for deciding:
+- the document type
+- the overall structure
+- the number and order of sections
+- the appropriate content for each section
+- whether to use explanations, bullet lists, examples,
+  code blocks, tables, comparisons, summaries, etc.
+
+Do not force every document into the same structure.
+
+The content supplied to this tool must be the final content
+that should appear in the PDF. Do not use placeholders,
+instructions, or meta-comments.
+
+Create a professional document that is easy to read and
+appropriate for the user's requested subject and audience.
+
+The tool generates the PDF, uploads it to storage, and
+returns a temporary download URL.
+
+Do not invent a download URL. The URL must come from the
+tool result.
         `,
 
         schema: z.object({
 
             title: z.string(),
 
-            subtitle: z.string()
-                .optional(),
+            subtitle: z.string().optional(),
 
             sections: z.array(
                 z.object({
-                    heading: z.string(),
 
-                    points: z.array(
-                        z.string()
+                    heading: z.string().optional(),
+
+                    blocks: z.array(
+
+                        z.discriminatedUnion("type", [
+
+                            // Normal explanation
+                            z.object({
+                                type: z.literal("paragraph"),
+                                content: z.string()
+                            }),
+
+                            // Bullet list
+                            z.object({
+                                type: z.literal("bullets"),
+                                items: z.array(z.string())
+                            }),
+
+                            // Numbered list
+                            z.object({
+                                type: z.literal("numbered_list"),
+                                items: z.array(z.string())
+                            }),
+
+                            // Code example
+                            z.object({
+                                type: z.literal("code"),
+                                language: z.string(),
+                                code: z.string()
+                            }),
+
+                            // Comparison / data table
+                            z.object({
+                                type: z.literal("table"),
+                                headers: z.array(z.string()),
+                                rows: z.array(
+                                    z.array(z.string())
+                                )
+                            }),
+
+                            // Important information
+                            z.object({
+                                type: z.literal("callout"),
+                                title: z.string(),
+                                content: z.string()
+                            })
+
+                        ])
                     )
                 })
             )
