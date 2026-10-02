@@ -11,6 +11,8 @@ import {
     FaGoogle,
     FaComments,
 } from "react-icons/fa";
+import AgentWorkflow from "../components/AgentWorkflow.jsx";
+import PlatformShowcase from "../components/PlatformShowcase.jsx";
 
 const Welcome = () => {
     
@@ -161,7 +163,7 @@ const Welcome = () => {
 `}</style>
             {/* Background glow */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-250px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-indigo-600/20 blur-[150px] rounded-full" />
+                <div className="absolute top-[-250px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-slate-600/20 blur-[150px] rounded-full" />
                 <div className="absolute top-[500px] left-[-200px] w-[400px] h-[400px] bg-violet-600/10 blur-[130px] rounded-full" />
                 <div className="absolute top-[800px] right-[-200px] w-[400px] h-[400px] bg-blue-600/10 blur-[130px] rounded-full" />
             </div>
@@ -170,31 +172,16 @@ const Welcome = () => {
             <nav className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
 
                 <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <div className="w-9 h-9 rounded-full bg-slate-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                         <span className="text-lg font-bold">C</span>
                     </div>
 
                     <span className="text-xl font-semibold tracking-tight">
-                        Cortex<span className="text-indigo-400">AI</span>
+                        Cortex<span className="text-slate-400">AI</span>
                     </span>
                 </div>
 
-                <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
-                    <a
-                        href="#features"
-                        className="hover:text-white transition-colors"
-                    >
-                        Features
-                    </a>
-
-                    <a
-                        href="#about"
-                        className="hover:text-white transition-colors"
-                    >
-                        About
-                    </a>
-                </div>
-
+                
                 <button onClick={googleLogin} className="px-5 py-2.5 rounded-xl bg-white text-black text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">
                     <FcGoogle size={20} className="inline white" /> Login with Google
                 </button>
@@ -251,7 +238,7 @@ const Welcome = () => {
 
                         <br />
 
-                        <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-blue-400 bg-clip-text text-transparent">
+                        <span className="text-slate-500 bg-clip-text text-transparent">
                             Agentic Ecosystem
                         </span>
 
@@ -277,7 +264,7 @@ const Welcome = () => {
                                     .getElementById("features")
                                     ?.scrollIntoView({ behavior: "smooth" })
                             }
-                            className="cursor-pointer px-7 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-all font-medium shadow-lg shadow-indigo-600/20"
+                            className="cursor-pointer px-7 py-3.5 rounded-xl bg-slate-500 hover:bg-slate-700 transition-all font-medium shadow-lg shadow-indigo-600/20"
                         >
                             Explore Agents
                         </button>
@@ -398,6 +385,11 @@ const Welcome = () => {
 
             </section>
 
+            {/* Agent Workflow */}
+            <AgentWorkflow />
+
+            {/* Platform Showcase */} 
+            <PlatformShowcase />
 
             {/* Small bottom section */}
             <section

@@ -2,7 +2,7 @@ import { Code2, FileText, Globe, ImageIcon, MessageSquare, Mic, Paperclip, Prese
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import sendMessage from '../features/sendMessage.js'
-import { addMessage, setArtifacts, setLoading } from '../redux/messagesSlice.js'
+import { addMessage, clearMessages, setArtifacts, setLoading } from '../redux/messagesSlice.js'
 import { addConversation, setConvTitle, setSelectedConversation } from '../redux/conversationSlice.js'
 import { createConversation } from '../features/createConversation.js'
 import { updateConversation } from '../features/updateConversation.js'
@@ -23,6 +23,8 @@ const Chatinput = ({newConversationRef}) => {
     let conversation = selectedConversation
     if (!conversation) {
       const conv = await createConversation()
+      dispatch(clearMessages())
+      dispatch(setArtifacts([]))
       newConversationRef.current = true;
       dispatch(setSelectedConversation(conv))
       dispatch(addConversation(conv))

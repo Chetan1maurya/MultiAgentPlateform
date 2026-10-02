@@ -20,7 +20,8 @@ const artifactSchema = new mongoose.Schema({
 const messageSchema = new mongoose.Schema({
     conversationId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Conversation"
+        ref: "Conversation",
+        index: true
     },
     role: {
         type: String,

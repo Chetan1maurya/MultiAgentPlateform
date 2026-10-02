@@ -15,7 +15,6 @@ export const router = async (state) => {
             }
         }
         if (state.file.mimetype.startsWith("image/")) {
-            console.log("Image Analyzer hi agent hai")
             return {
                 ...state,
                 agent: "imageAnalyzer"

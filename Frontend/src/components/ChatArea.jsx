@@ -28,7 +28,7 @@ const ChatArea = () => {
       }
     }
     getMesg()
-  }, [dispatch, selectedConversation, selectedConversation?._id])
+  }, [dispatch, selectedConversation?._id])
 
   return (
     <div className="flex-1 flex flex-col min-w-0">

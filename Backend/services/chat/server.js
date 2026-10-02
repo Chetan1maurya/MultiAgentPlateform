@@ -15,8 +15,7 @@ app.use("/", router)
 app.get("/",(req,res) => {
     res.json({message: "Hello what is your problem in chat"})
 })
-
+await connectDB()
 app.listen(PORT,() => {
     console.log(`Chat Service started at ${PORT}`)
-    connectDB()
 })

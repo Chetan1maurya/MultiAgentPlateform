@@ -14,7 +14,7 @@ app.get("/",(req,res) => {
     res.json({message: "Hello what is your problem in auth"})
 })
 
+await connectDB()
 app.listen(PORT,() => {
     console.log(`Auth Service started at ${PORT}`)
-    connectDB()
 })
