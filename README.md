@@ -4,7 +4,7 @@
 
 CortexAI is an **agentic AI platform** that brings multiple specialized AI agents together into a single ecosystem.
 
-Instead of using one AI workflow for every task, CortexAI provides specialized agents for **conversation, coding, PDF generation, presentation creation, image analysis, and web research**.
+Instead of using one AI workflow for every task, CortexAI provides specialized agents for **conversation, coding, PDF generation, PPT generation, image analysis, and web research**.
 
 The platform is designed around the idea of intelligent task routing — a user provides a request, and the appropriate specialized agent handles the task.
 
@@ -281,7 +281,7 @@ npm -v
 # 📥 1. Clone the Repository
 
 ```bash
-git clone https://github.com/chetan1maurya/MultiAgentPlateform.git
+git clone [https://github.com/Chetan1maurya/MultiAgentPlateform.git](https://github.com/Chetan1maurya/MultiAgentPlateform.git)
 ```
 
 Move into the project:
@@ -385,6 +385,10 @@ QDRANT_API_KEY=your_qdrant_api_key
 # Storage
 STORAGE_ACCESS_KEY=your_access_key
 STORAGE_SECRET_KEY=your_secret_key
+
+# Razorpay
+RAZORPAY_KEY_ID=Razorpay API key ID 
+RAZORPAY_KEY_SECRET=Razorpay API secret 
 ```
 
 **Do not commit `.env` files or API keys to GitHub.**
@@ -415,99 +419,11 @@ Depending on the enabled features, you may need credentials for:
 | Qdrant          | Vector search / RAG            |
 | Object Storage  | Files and generated documents  |
 | Email Service   | Email-related functionality    |
+| Razorpay        | Payment Service                |
+
 
 Never expose secret API keys in frontend code.
 
----
-
-# 🔥 Firebase Authentication
-
-CortexAI uses Firebase Authentication for user authentication.
-
-To configure Firebase:
-
-1. Create a Firebase project.
-2. Enable the required authentication provider.
-3. Configure Google Sign-In if required.
-4. Create the required Firebase credentials.
-5. Add the credentials to the backend/frontend environment configuration.
-6. Add your local development domain to Firebase's authorized domains if required.
-
-For local development, this will generally include:
-
-```text
-localhost
-```
-
----
-
-# 🧠 AI Model Configuration
-
-The specialized agents require access to an LLM provider.
-
-The exact model configuration depends on the provider and model configured in the backend.
-
-For example:
-
-```env
-LLM_API_KEY=your_api_key
-```
-
-The model should be configured in the backend agent/model layer rather than exposing the API key to the frontend.
-
----
-
-# ⚡ Redis
-
-Redis is used for fast-access application state and caching.
-
-Depending on the application flow, Redis can be used for:
-
-* Conversation caching
-* Session-related data
-* Rate limiting
-* Temporary agent state
-* Frequently accessed information
-
-Run Redis locally or connect the application to a hosted Redis instance.
-
-Example:
-
-```env
-REDIS_URL=redis://localhost:6379
-```
-
----
-
-# 🔎 Vector Search / RAG
-
-CortexAI can use vector search infrastructure for retrieval-based workflows.
-
-Qdrant can be configured using:
-
-```env
-QDRANT_URL=your_qdrant_url
-QDRANT_API_KEY=your_qdrant_api_key
-```
-
-This allows documents or other information to be represented as vectors and retrieved based on semantic similarity.
-
----
-
-# 🖼️ File & Document Processing
-
-Some agents work with uploaded or generated files.
-
-Examples include:
-
-* PDF files
-* Images
-* Presentation files
-* Generated documents
-
-The backend handles these operations and communicates with the required storage and processing services.
-
----
 
 # 🔄 Development Workflow
 
@@ -718,7 +634,7 @@ To contribute:
 ### 1. Fork the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone [https://github.com/Chetan1maurya/MultiAgentPlateform.git](https://github.com/Chetan1maurya/MultiAgentPlateform.git)
 ```
 
 ### 2. Create a branch
