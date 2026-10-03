@@ -268,6 +268,7 @@ Make sure the following are installed:
 * Required AI/LLM API access
 * Firebase project for authentication
 * Qdrant if using the retrieval/vector features
+* Razorpay credential for payment service
 
 You can verify Node.js and npm:
 
@@ -277,82 +278,6 @@ npm -v
 ```
 
 ---
-
-# 📥 1. Clone the Repository
-
-```bash
-git clone [https://github.com/Chetan1maurya/MultiAgentPlateform.git](https://github.com/Chetan1maurya/MultiAgentPlateform.git)
-```
-
-Move into the project:
-
-```bash
-cd CortexAI
-```
-
----
-
-# 🎨 2. Setup Frontend
-
-Open a terminal:
-
-```bash
-cd Frontend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create your environment configuration if your frontend requires one:
-
-```bash
-.env
-```
-
-Add the required frontend configuration, for example:
-
-```env
-VITE_API_URL=http://localhost:8000
-```
-
-> Use the environment variable names expected by the current frontend codebase.
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-The frontend will normally be available at:
-
-```text
-http://localhost:5173
-```
-
----
-
-# ⚙️ 3. Setup Backend
-
-Open another terminal:
-
-```bash
-cd Backend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create:
-
-```text
-.env
-```
 
 Add the required backend configuration.
 
@@ -390,151 +315,306 @@ STORAGE_SECRET_KEY=your_secret_key
 RAZORPAY_KEY_ID=Razorpay API key ID 
 RAZORPAY_KEY_SECRET=Razorpay API secret 
 ```
+## 🚀 Running CortexAI Locally
 
-**Do not commit `.env` files or API keys to GitHub.**
+CortexAI uses a **microservice-based backend architecture**. The backend consists of an API Gateway and multiple independent services.
 
-Start the backend:
+### Backend Services
+
+| Service             | Purpose                                                                        |
+| ------------------- | ------------------------------------------------------------------------------ |
+| **Gateway**         | Entry point for client requests and routes requests to the appropriate service |
+| **Auth Service**    | Handles authentication and user-related operations                             |
+| **Agent Service**   | Handles AI agent workflows and agent execution                                 |
+| **Billing Service** | Handles credits, payments, and billing-related operations                      |
+| **Chat Service**    | Handles conversations, messages, and chat history                              |
+| **Redis**           | Used for caching, rate limiting, and other fast-access application data        |
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Node.js
+* npm
+* Docker Desktop
+* Git
+
+You will also need the required environment variables for the services, including database, authentication, AI, Redis, payment, and other external service credentials.
+
+> Environment variables and Docker configuration may change as the project evolves. Refer to the `.env.example` files and service configuration before starting the application.
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd <repository-folder>
+```
+
+---
+
+## 2. Install Dependencies
+
+Install dependencies for the frontend and each backend service.
+
+For the backend:
+
+```bash
+cd Backend
+npm install
+```
+
+Then install dependencies inside each service if required:
+
+```bash
+cd services/auth
+npm install
+
+cd ../agent
+npm install
+
+cd ../billing
+npm install
+
+cd ../chat
+npm install
+```
+
+Install frontend dependencies separately:
+
+```bash
+cd Frontend
+npm install
+```
+
+---
+
+## 3. Start Redis with Docker
+
+Redis is configured through Docker Compose.
+
+Open a terminal in the `Backend` directory:
+
+```bash
+cd Backend
+```
+
+Start the Docker services:
+
+```bash
+docker compose up
+```
+
+This starts the Docker-managed infrastructure required by the backend, including Redis.
+
+Keep this terminal running.
+
+> If your `docker-compose.yml` contains additional infrastructure services, those services will also be started by this command.
+
+---
+
+## 4. Start the API Gateway
+
+Open a **new terminal**.
+
+```bash
+cd Backend
+```
+
+Start the gateway:
+
+```bash
+nodemon server.js
+```
+
+The gateway acts as the main entry point for requests coming from the frontend and forwards them to the appropriate backend microservice.
+
+---
+
+## 5. Start the Auth Service
+
+Open another terminal:
+
+```bash
+cd Backend/services/auth
+```
+
+Start the service:
+
+```bash
+nodemon server.js
+```
+
+---
+
+## 6. Start the Agent Service
+
+Open another terminal:
+
+```bash
+cd Backend/services/agent
+```
+
+Start the service:
+
+```bash
+nodemon server.js
+```
+
+The Agent Service handles CortexAI's AI-agent workflows.
+
+---
+
+## 7. Start the Billing Service
+
+Open another terminal:
+
+```bash
+cd Backend/services/billing
+```
+
+Start the service:
+
+```bash
+nodemon server.js
+```
+
+The Billing Service handles billing and payment-related operations.
+
+---
+
+## 8. Start the Chat Service
+
+Open another terminal:
+
+```bash
+cd Backend/services/chat
+```
+
+Start the service:
+
+```bash
+nodemon server.js
+```
+
+The Chat Service handles conversations and chat-related operations.
+
+---
+
+## 9. Start the Frontend
+
+Open another terminal and navigate to the frontend:
+
+```bash
+cd Frontend
+```
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-If your backend uses a different development command, use the script defined in `Backend/package.json`.
-
----
-
-# 🔐 Environment Variables
-
-CortexAI uses environment variables for credentials and external services.
-
-Depending on the enabled features, you may need credentials for:
-
-| Service         | Purpose                        |
-| --------------- | ------------------------------ |
-| Database        | Application data               |
-| Redis           | Caching and conversation state |
-| Firebase        | Authentication                 |
-| LLM Provider    | AI model inference             |
-| Search Provider | Web research                   |
-| Qdrant          | Vector search / RAG            |
-| Object Storage  | Files and generated documents  |
-| Email Service   | Email-related functionality    |
-| Razorpay        | Payment Service                |
-
-
-Never expose secret API keys in frontend code.
-
-
-# 🔄 Development Workflow
-
-Once both frontend and backend are running:
-
-```text
-Browser
-   │
-   │ User Request
-   ▼
-Frontend
-   │
-   │ HTTP Request
-   ▼
-Express Backend
-   │
-   ▼
-Agent Layer
-   │
-   ├── Chat Agent
-   ├── Coding Agent
-   ├── PDF Agent
-   ├── PPT Agent
-   ├── Image Agent
-   └── Search Agent
-   │
-   ▼
-AI / External Services
-   │
-   ▼
-Response
-   │
-   ▼
-Frontend
-```
-
----
-
-# 🧪 Testing Locally
-
-After starting both applications, open the frontend:
+The frontend will be available at the URL shown by Vite, typically:
 
 ```text
 http://localhost:5173
 ```
 
-Then test:
-
-### Chat
-
-```text
-Explain blockchain in simple terms.
-```
-
-### Coding
-
-```text
-Write a binary search implementation in C++.
-```
-
-### PDF
-
-```text
-Create a document explaining REST APIs.
-```
-
-### Presentation
-
-```text
-Create a presentation about artificial intelligence.
-```
-
-### Image
-
-Upload an image and ask:
-
-```text
-What information can you identify from this image?
-```
-
-### Search
-
-```text
-Research the latest developments in generative AI.
-```
-
 ---
 
-# 🔒 Security
+## 🧩 Local Development Architecture
 
-For local development and production deployments:
+During local development, the application runs approximately as follows:
 
-* Never commit API keys.
-* Never commit `.env` files.
-* Keep service credentials on the backend.
-* Validate user input.
-* Authenticate protected API routes.
-* Apply rate limiting to expensive operations.
-* Restrict file upload types and sizes.
-* Keep Firebase credentials secure.
-* Use HTTPS in production.
+```text
+                         ┌─────────────────┐
+                         │    Frontend     │
+                         │ React / Vite    │
+                         └────────┬────────┘
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │  API Gateway    │
+                         │   server.js     │
+                         └────────┬────────┘
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+              ▼                   ▼                   ▼
+      ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+      │ Auth Service │    │Agent Service │    │Chat Service  │
+      │   server.js  │    │   server.js  │    │   server.js  │
+      └──────────────┘    └──────────────┘    └──────────────┘
+                                  │
+                                  │
+                                  ▼
+                         ┌─────────────────┐
+                         │ Billing Service │
+                         │   server.js     │
+                         └─────────────────┘
 
-Add `.env` to `.gitignore`:
-
-```gitignore
-.env
-.env.local
-.env.production
-node_modules/
+                         ┌─────────────────┐
+                         │      Redis      │
+                         │ Docker Container│
+                         └─────────────────┘
 ```
 
+### Terminal Overview
+
+For local development, you will typically have the following processes running:
+
+**Terminal 1 — Redis / Docker**
+
+```bash
+cd Backend
+docker compose up
+```
+
+**Terminal 2 — Gateway**
+
+```bash
+cd Backend
+nodemon server.js
+```
+
+**Terminal 3 — Auth**
+
+```bash
+cd Backend/services/auth
+nodemon server.js
+```
+
+**Terminal 4 — Agent**
+
+```bash
+cd Backend/services/agent
+nodemon server.js
+```
+
+**Terminal 5 — Billing**
+
+```bash
+cd Backend/services/billing
+nodemon server.js
+```
+
+**Terminal 6 — Chat**
+
+```bash
+cd Backend/services/chat
+nodemon server.js
+```
+
+**Terminal 7 — Frontend**
+
+```bash
+cd Frontend
+npm run dev
+```
+
+Once all services are running, open the frontend in your browser and use CortexAI.
 ---
 
 # 🧩 Adding a New Agent
