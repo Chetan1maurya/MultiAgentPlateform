@@ -1,6 +1,6 @@
-import React from "react";
 import horizontalImage from "../assets/Horizontal.png";
 import VerticalImage from "../assets/Vertical.png";
+
 const PlatformShowcase = () => {
   return (
     <section className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 py-28 overflow-hidden">

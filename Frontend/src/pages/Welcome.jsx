@@ -15,7 +15,7 @@ import AgentWorkflow from "../components/AgentWorkflow.jsx";
 import PlatformShowcase from "../components/PlatformShowcase.jsx";
 
 const Welcome = () => {
-    
+
     const dispatch = useDispatch()
     const handleLogin = async (token) => {
         try {
@@ -26,19 +26,19 @@ const Welcome = () => {
         }
     }
     const googleLogin = async () => {
-    try {
-        googleProvider.setCustomParameters({
-            prompt: "select_account",
-        });
+        try {
+            googleProvider.setCustomParameters({
+                prompt: "select_account",
+            });
 
-        const data = await signInWithPopup(auth, googleProvider);
-        const token = await data.user.getIdToken();
+            const data = await signInWithPopup(auth, googleProvider);
+            const token = await data.user.getIdToken();
 
-        await handleLogin(token);
-    } catch (error) {
-        console.log(error);
-    }
-};
+            await handleLogin(token);
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const features = [
         {
             name: "Chat Agent",
@@ -181,7 +181,7 @@ const Welcome = () => {
                     </span>
                 </div>
 
-                
+
                 <button onClick={googleLogin} className="px-5 py-2.5 rounded-xl bg-white text-black text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">
                     <FcGoogle size={20} className="inline white" /> Login with Google
                 </button>
@@ -388,7 +388,7 @@ const Welcome = () => {
             {/* Agent Workflow */}
             <AgentWorkflow />
 
-            {/* Platform Showcase */} 
+            {/* Platform Showcase */}
             <PlatformShowcase />
 
             {/* Small bottom section */}
@@ -415,8 +415,8 @@ const Welcome = () => {
                 </div>
                 <div className="flex justify-center items-center mt-10">
                     <button onClick={googleLogin} className="px-5 py-2.5 rounded-xl bg-white text-black text-sm font-medium hover:bg-slate-200 transition-colors cursor-pointer">
-                     Get Started
-                </button>
+                        Get Started
+                    </button>
                 </div>
 
             </section>
